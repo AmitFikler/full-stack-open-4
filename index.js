@@ -1,12 +1,18 @@
 const express = require('express');
 const app = express();
+require('express-async-errors');
 const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const apiRouter = require('./routers/api');
 
+const MONGODB_URI =
+  process.env.NODE_ENV === 'test'
+    ? process.env.mongoUrlTest
+    : process.env.mongoUrl;
+
 mongoose
-  .connect(process.env.mongoUrl)
+  .connect(MONGODB_URI)
   .then(() => {
     console.log('connect to database');
   })
@@ -23,3 +29,5 @@ const PORT = 3003;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;
