@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const apiRouter = require('./routers/api');
 const userRouter = require('./routers/user');
+const loginRouter = require('./routers/login');
 
 const MONGODB_URI =
   process.env.NODE_ENV === 'test'
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use('/api/blogs', apiRouter);
 app.use('/api/users', userRouter);
+app.use('/api/login', loginRouter);
 
 const PORT = 3003;
 
