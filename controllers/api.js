@@ -2,7 +2,10 @@ const User = require('../models/user');
 const Blog = require('../models/blog');
 
 exports.getAllBlogs = async (request, response) => {
-  const allBlog = await Blog.find({});
+  const allBlog = await Blog.find({}).populate('user', {
+    username: 1,
+    name: 1,
+  });
   response.json(allBlog);
 };
 
