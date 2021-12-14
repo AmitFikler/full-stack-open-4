@@ -2,6 +2,7 @@ const { TestWatcher } = require('jest');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../index');
+const blog = require('../models/blog');
 const Blog = require('../models/blog');
 const api = supertest(app);
 
@@ -97,8 +98,49 @@ describe('api testing', () => {
       expect(blogs[0].id).toBeDefined();
     });
   });
+  describe('Delete blog by Id', () => {
+    test('DELETE /api/blogs: Deletes a blog by its ID ', async () => {
+      const blogs = await Blog.find({});
+      const idToDelete = blogs[0].id;
+      await api.delete(`/api/blogs/?id=${idToDelete}`).expect(204);
+      const blogsAfterDel = await blog.find({});
+      expect(blogsAfterDel.length).toBe(blogs.length - 1);
+    });
+
+    describe('Update blog', () => {
+      test('should be able to update blog', async () => {
+        const blogs = await Blog.find({});
+        const idToUpdate = blogs[0].id;
+        await api
+          .put(`/api/blogs/${idToUpdate}`)
+          .send({ likes: 111 })
+          .expect(200);
+        const updatedOne = await Blog.findOne({ id: idToUpdate });
+        expect(updatedOne.likes).toBe(111);
+      });
+      describe('should be throw error if try to update with empty title or url', () => {
+        test('empty url ', async () => {
+          const blogs = await Blog.find({});
+          const idToUpdate = blogs[0].id;
+          await api
+            .put(`/api/blogs/${idToUpdate}`)
+            .send({ url: '' })
+            .expect(401);
+        });
+        test('empty title', async () => {
+          const blogs = await Blog.find({});
+          const idToUpdate = blogs[0].id;
+          await api
+            .put(`/api/blogs/${idToUpdate}`)
+            .send({ title: '' })
+            .expect(401);
+        });
+      });
+    });
+  });
 });
 
 afterAll(() => {
   mongoose.connection.close();
+  app.killServer();
 });
