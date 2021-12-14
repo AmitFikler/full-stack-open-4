@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 require('dotenv').config();
 const apiRouter = require('./routers/api');
+const userRouter = require('./routers/user');
 
 const MONGODB_URI =
   process.env.NODE_ENV === 'test'
@@ -24,6 +25,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/blogs', apiRouter);
+app.use('/api/users', userRouter);
 
 const PORT = 3003;
 

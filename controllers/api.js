@@ -1,4 +1,4 @@
-const blog = require('../models/blog');
+const User = require('../models/user');
 const Blog = require('../models/blog');
 
 exports.getAllBlogs = async (request, response) => {
@@ -7,15 +7,18 @@ exports.getAllBlogs = async (request, response) => {
 };
 
 exports.addNewBlog = async (request, response) => {
-  let { title, author, url, likes } = request.body;
+  let { title, author, url, likes, userId } = request.body;
   if (!likes) {
     likes = 0;
   }
   if (!title && !url) {
     return response.sendStatus(400);
   }
-  const blog = new Blog({ title, author, url, likes });
+  const user = await User.findById(userId);
+  const blog = new Blog({ title, author, url, likes, user: user._id });
   const savedBlog = await blog.save();
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
   response.status(201).json(savedBlog);
 };
 
