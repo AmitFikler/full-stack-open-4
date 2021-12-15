@@ -7,6 +7,7 @@ require('dotenv').config();
 const apiRouter = require('./routers/api');
 const userRouter = require('./routers/user');
 const loginRouter = require('./routers/login');
+const { tokenExtractor } = require('./middlewares/tokenMiddleware');
 
 const MONGODB_URI =
   process.env.NODE_ENV === 'test'
@@ -24,7 +25,7 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
-
+app.use(tokenExtractor);
 app.use('/api/blogs', apiRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
